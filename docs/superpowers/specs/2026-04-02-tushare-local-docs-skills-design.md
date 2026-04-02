@@ -10,7 +10,7 @@
 
 ## 项目上下文
 
-- 已有爬取成果位于 `/Users/zhushanwen/Documents/api-docs/tushare/`，包含 228 个 md 文档和爬取脚本
+- 已有爬取成果位于 `/Users/zhushanwen/Documents/api-docs/tushare/`，包含 228 个 API 接口文档（.md）和爬取脚本
 - GitHub 数据源：`waditu-tushare/skills` 仓库的 `数据接口.md`，内容与本地 `index.md` 一致
 - 已有脚本：`fetch_docs.py`（爬取）、`generate_local_index.py`（索引生成），均为零依赖 Python
 
@@ -53,35 +53,59 @@ local-tushare-skills-docs/
 
 ## Scripts 设计
 
+### 数据源
+
+- remote_index.md 来源：`https://raw.githubusercontent.com/waditu-tushare/skills/master/tushare-data/references/%E6%95%B0%E6%8D%AE%E6%8E%A5%E5%8F%A3.md`
+- 每次 update_docs.sh 运行时从该 URL 覆盖下载
+
 ### update_docs.sh — 一键更新流程
 
+```bash
+#!/bin/bash
+set -euo pipefail
+
+# 步骤 1：下载索引（失败则中止）
+curl -fSL "$REMOTE_INDEX_URL" -o docs/remote_index.md || { echo "下载索引失败"; exit 1; }
+
+# 步骤 2：爬取文档（失败继续，汇总报告）
+python3 scripts/fetch_docs.py
+
+# 步骤 3：生成 local_index.md
+python3 scripts/generate_index.py
+
+# 步骤 4：打印统计
 ```
-1. curl 下载 GitHub raw URL 的 数据接口.md → docs/remote_index.md
-2. python3 scripts/fetch_docs.py
-   - 解析 docs/remote_index.md 表格
-   - 按分类创建目录，下载文档到 docs/ 下
-   - 默认跳过已存在文件，--force 强制覆盖
-3. python3 scripts/generate_index.py
-   - 扫描 docs/ 下所有 .md（排除 remote_index.md、local_index.md）
-   - 读取 remote_index.md，将在线链接替换为本地相对路径
-   - 输出 docs/local_index.md
-4. 打印统计：新增/跳过/失败
-```
+
+错误处理策略：步骤 1 失败则中止（没有索引无法继续）；步骤 2/3 失败不中止，但汇总报告。
 
 ### fetch_docs.py — 文档爬取
 
-从已有 `fetch_docs.py` 适配：
-- `BASE_DIR` 指向 `docs/` 目录（相对于项目根）
-- `INDEX_FILE` 指向 `docs/remote_index.md`
+从已有 `fetch_docs.py` 适配，关键路径修改：
+
+```python
+# 路径计算（相对于脚本所在目录）
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.join(SCRIPT_DIR, "..")
+DOCS_DIR = os.path.join(PROJECT_ROOT, "docs")
+INDEX_FILE = os.path.join(DOCS_DIR, "remote_index.md")
+```
+
+- 输出路径基于 `DOCS_DIR`：`DOCS_DIR/分类1/分类2/接口名.md`
 - 保留原有特性：零依赖、重试机制（3次递增间隔）、幂等性（默认跳过已存在）、`--force`/`--dry-run` 参数
 
 ### generate_index.py — 索引生成
 
-从已有 `generate_local_index.py` 适配：
-- `BASE_DIR` 指向 `docs/` 目录
-- 输入：`docs/remote_index.md`
-- 输出：`docs/local_index.md`
-- 扫描范围限定在 `docs/` 目录下
+从已有 `generate_local_index.py` 适配，关键路径修改：
+
+```python
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.join(SCRIPT_DIR, "..")
+DOCS_DIR = os.path.join(PROJECT_ROOT, "docs")
+INDEX_FILE = os.path.join(DOCS_DIR, "remote_index.md")
+OUTPUT_FILE = os.path.join(DOCS_DIR, "local_index.md")
+```
+
+同名接口处理：`index.md` 中存在同名接口（如 `index_daily`、`trade_cal`、`pro_bar`），原脚本的 flat dict `{文件名: 路径}` 会互相覆盖。适配时改为 `{文件名: [路径列表]}`，替换链接时根据分类字段匹配正确路径。
 
 ## Skills 设计
 
