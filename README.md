@@ -52,6 +52,20 @@ cd ~/.claude/skills/tushare-doc-query
 
 也可以在 Claude Code 对话中直接说"更新 tushare 文档"来触发。
 
+## 与官网 Skill 的关系
+
+本项目是**开发指导** skill，帮助你选对接口、写对代码、避开陷阱。
+
+如果你使用 OpenClaw、Trae 等智能体，需要让 AI **直接执行** tushare API 调用获取数据，请安装官网的数据操作 skill：
+
+```bash
+npx skills add https://github.com/waditu-tushare/skills.git --skill tushare-data
+```
+
+官网 skill 仓库：[waditu-tushare/skills](https://github.com/waditu-tushare/skills)
+
+两个 skill 互补：官网 skill 负责「执行数据获取」，本 skill 负责「指导 API 开发」。
+
 ## 技术说明
 
 - 所有脚本零外部依赖，仅使用 Python 标准库

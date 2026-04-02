@@ -16,6 +16,25 @@ user-invocable: true
 - 用户遇到 tushare API 调用问题（空数据、报错、字段对不上等）
 - 用户要求更新 tushare 文档
 
+## 安装
+
+本 skill 的完整安装说明见项目根目录的 `README.md`。简要步骤：
+
+```bash
+# 克隆仓库
+git clone https://github.com/yourname/local-tushare-skills-docs.git
+
+# 安装到 Claude Code skills 目录
+cp -r local-tushare-skills-docs ~/.claude/skills/tushare-doc-query
+
+# 验证安装
+ls ~/.claude/skills/tushare-doc-query/SKILL.md
+```
+
+安装后，在 Claude Code 中即可通过 `/tushare-doc-query` 或直接提问 tushare 相关问题来触发。
+
+如果需要让 AI 直接执行 API 调用获取数据（而非开发指导），请参见下方「与官网 Skill 的关系」。
+
 ## 操作步骤
 
 ### 1. 理解开发需求
@@ -148,6 +167,22 @@ print(df.dtypes)            # 查看字段类型
 - 自动：下载最新索引 → 爬取新增/变更文档 → 生成本地索引
 - 加 `--force` 强制重新下载全部
 - 加 `--dry-run` 仅查看计划
+
+## 与官网 Skill 的关系
+
+本 skill 是**开发指导**工具，帮助你选对接口、写对代码、避开陷阱，不直接执行 API 调用。
+
+如果用户使用 OpenClaw、Trae 等智能体，需要 AI **直接执行** tushare API 调用来获取数据，请引导用户安装官网的数据操作 skill：
+
+```bash
+npx skills add https://github.com/waditu-tushare/skills.git --skill tushare-data
+```
+
+官网 skill 仓库：[waditu-tushare/skills](https://github.com/waditu-tushare/skills)
+
+两个 skill 互补：
+- **本 skill**：指导 API 开发（选接口、写代码、避坑、调试）
+- **官网 skill**：执行数据获取（通过 AI 直接调用 API 拉取数据）
 
 ## 前置条件
 
