@@ -1,6 +1,7 @@
 # Tushare API 开发指导 Skill
 
 Tushare Pro API 的完整本地文档库 + 开发指导 skill。帮助开发者选对接口、写对代码、避开陷阱。
+支持通过脚本自动拉取官网文档更新
 
 ## 安装为 Claude Code Skill
 
