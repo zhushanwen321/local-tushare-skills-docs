@@ -1,20 +1,22 @@
 ---
 name: tushare-doc-query
-description: 查询 tushare API 接口文档，包括入参、出参、调用方式。当用户询问 tushare 相关的数据接口、行情数据、财务数据、K线获取等问题时触发。
+description: 查询 tushare API 接口文档，包括入参、出参、调用方式。当用户询问 tushare 相关的数据接口、行情数据、财务数据、K线获取等问题时触发。也支持更新本地文档库。
+user-invocable: true
 ---
 
-# Tushare 文档查询
+# Tushare 文档查询与更新
 
-当用户询问 tushare 数据接口、数据获取方式、API 用法时使用此 skill。
+查询 tushare API 接口文档，或更新本地文档库。
 
 ## 触发条件
 
-用户问题涉及以下任一：
-- 明确提到 "tushare"
-- 询问如何获取某类金融数据（股票行情、财务报表、基金净值、期货数据等）
-- 询问某个 tushare 接口的用法（如 daily、stock_basic、fina_indicator 等）
+- 用户说 "tushare"、"tushare-doc-query"、"/tushare-doc-query"
+- 用户询问 tushare 数据接口、行情数据、财务数据、K线获取等问题
+- 用户要求更新 tushare 文档
 
 ## 操作步骤
+
+### 查询文档
 
 1. **读取索引**：读取 `docs/local_index.md`，获取完整接口列表（包含接口名、标题、分类、描述、本地文档路径）
 
@@ -30,6 +32,16 @@ description: 查询 tushare API 接口文档，包括入参、出参、调用方
    - 调用示例代码（如有）
 
 4. **返回结果**：以清晰的 Markdown 格式向用户展示接口信息
+
+### 更新文档
+
+当用户要求更新 tushare 文档时：
+
+1. 执行更新脚本：`bash scripts/update_docs.sh`
+   - 脚本会自动：下载最新索引 → 爬取新增/变更文档 → 生成本地索引
+   - 加 `--force` 强制重新下载全部
+   - 加 `--dry-run` 仅查看计划
+2. 更新完成后报告统计结果（新增/跳过/失败数量）
 
 ## API 使用注意事项
 
