@@ -15,7 +15,7 @@ OUTPUT_FILE = os.path.join(DOCS_DIR, "local_index.md")
 def scan_md_files() -> dict[str, list[str]]:
     """扫描 docs/ 下所有 md 文件，返回 {文件名: [相对路径列表]} 映射。"""
     md_files: dict[str, list[str]] = {}
-    for root, dirs, files in os.walk(DOCS_DIR):
+    for root, _, files in os.walk(DOCS_DIR):
         for file in files:
             if file.endswith(".md") and file not in ("remote_index.md", "local_index.md"):
                 full_path = os.path.join(root, file)
@@ -28,7 +28,7 @@ def replace_links(content: str, md_files: dict[str, list[str]]) -> str:
     """逐行处理 remote_index.md，将在线链接替换为本地路径。"""
     # 匹配整行：提取接口名、在线链接、分类
     line_pattern = re.compile(
-        r'\| (?P<before>[^|]*) \[(?P<name>[^\]]+)\]\(https://tushare\.pro/wctapi/documents/\d+\.md\) (?P<after>[^|]*\|[^|]*\|(?P<category>[^|]*))\|'
+        r'\|\s*(?P<before>[^|]*?)\s*\[(?P<name>[^\]]+)\]\(https://tushare\.pro/wctapi/documents/\d+\.md\)\s*(?P<after>[^|]*\|[^|]*\|(?P<category>[^|]*))\|'
     )
 
     original_count = 0
