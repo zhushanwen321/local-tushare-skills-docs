@@ -1,6 +1,6 @@
-# Tushare 本地文档与 Skill
+# Tushare API 开发指导 Skill
 
-Tushare Pro API 的完整本地文档库、自动更新脚本，以及 LLM 可用的查询 skill。
+Tushare Pro API 的完整本地文档库 + 开发指导 skill。帮助开发者选对接口、写对代码、避开陷阱。
 
 ## 安装为 Claude Code Skill
 
@@ -21,11 +21,12 @@ ls ~/.claude/skills/tushare-doc-query/SKILL.md
 
 ```
 local-tushare-skills-docs/
-├── SKILL.md                     # Claude Code skill 入口
+├── SKILL.md                     # Claude Code skill 入口（API 开发指导）
 ├── docs/                        # 完整的 tushare API 文档（230+ 个接口）
 │   ├── remote_index.md          # 在线链接索引（接口总表）
 │   ├── local_index.md           # 本地链接索引
-│   └── tushare_api_pitfalls.md  # API 使用经验与踩坑记录
+│   ├── tushare_api_pitfalls.md  # API 使用经验与踩坑记录
+│   └── */                       # 按分类存放的接口文档（15 个分类目录）
 ├── scripts/
 │   ├── update_docs.sh           # 一键更新入口
 │   ├── fetch_docs.py            # 文档爬取
